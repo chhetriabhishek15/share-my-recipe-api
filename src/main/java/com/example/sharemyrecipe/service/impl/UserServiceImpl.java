@@ -1,4 +1,4 @@
-package com.example.sharemyrecipe.impl;
+package com.example.sharemyrecipe.service.impl;
 
 import com.example.sharemyrecipe.core.enums.Role;
 import com.example.sharemyrecipe.dto.SignupRequest;
