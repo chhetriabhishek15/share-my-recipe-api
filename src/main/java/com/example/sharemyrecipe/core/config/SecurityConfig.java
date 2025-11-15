@@ -4,6 +4,7 @@ import com.example.sharemyrecipe.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -22,24 +23,18 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
                 .authorizeHttpRequests(auth -> auth
-                        // Permit public endpoints
-                        .requestMatchers("/api/auth/**", "/api/recipes/**", "/h2-console/**").permitAll()
-                        // Require authentication for all other requests
+                        .requestMatchers("/api/auth/**", "/h2-console/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/recipes/**").permitAll()
                         .anyRequest().authenticated()
                 )
-
-                // 4. Add custom JWT filter before the standard authentication filter
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-
-                // 5. Allow H2 console frames using modern lambda style
                 .headers(headers -> headers.frameOptions(f -> f.disable()));
 
         return http.build();
     }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
